@@ -1,4 +1,3 @@
-```prisma
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -164,11 +163,11 @@ enum AuditResult {
 // ============================================================
 
 model City {
-  id            String             @id @default(uuid()) @db.Uuid
-  name          String             @unique
-  status        OrganizationStatus @default(ACTIVE)
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  id        String             @id @default(uuid()) @db.Uuid
+  name      String             @unique
+  status    OrganizationStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 
   districts     District[]
   scopes        Scope[]
@@ -185,9 +184,9 @@ model District {
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
 
-  city      City               @relation(fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  schools   School[]
-  scopes    Scope[]
+  city    City     @relation(fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  schools School[]
+  scopes  Scope[]
 
   @@unique([cityId, name])
   @@index([cityId])
@@ -195,29 +194,29 @@ model District {
 }
 
 model School {
-  id                   String           @id @default(uuid()) @db.Uuid
-  code                 String           @unique
-  name                 String
-  type                 SchoolType
-  districtId           String           @db.Uuid
-  location             String?
-  address              String?
-  principalId          String?          @db.Uuid
-  phone                String?
-  email                String?
-  capacity             Int?
-  status               SchoolStatus     @default(ACTIVE)
-  establishedOn        DateTime?        @db.Date
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
+  id            String       @id @default(uuid()) @db.Uuid
+  code          String       @unique
+  name          String
+  type          SchoolType
+  districtId    String       @db.Uuid
+  location      String?
+  address       String?
+  principalId   String?      @db.Uuid
+  phone         String?
+  email         String?
+  capacity      Int?
+  status        SchoolStatus @default(ACTIVE)
+  establishedOn DateTime?    @db.Date
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-  district             District         @relation(fields: [districtId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  principal            Employee?       @relation("SchoolPrincipal", fields: [principalId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  district  District  @relation(fields: [districtId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  principal Employee? @relation("SchoolPrincipal", fields: [principalId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   teacherAssignments   TeacherAssignment[]
   studentEnrollments   StudentEnrollment[]
-  transferRequestsFrom TransferRequest[] @relation("TransferFromSchool")
-  transferRequestsTo   TransferRequest[] @relation("TransferToSchool")
+  transferRequestsFrom TransferRequest[]   @relation("TransferFromSchool")
+  transferRequestsTo   TransferRequest[]   @relation("TransferToSchool")
   supervisionVisits    SupervisionVisit[]
   scopes               Scope[]
 
@@ -232,13 +231,13 @@ model School {
 // ============================================================
 
 model AcademicYear {
-  id                  String              @id @default(uuid()) @db.Uuid
-  name                String              @unique
-  startsOn            DateTime            @db.Date
-  endsOn              DateTime            @db.Date
-  isActive            Boolean             @default(false)
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  startsOn  DateTime @db.Date
+  endsOn    DateTime @db.Date
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   enrollments         StudentEnrollment[]
   teacherAssignments  TeacherAssignment[]
@@ -269,9 +268,9 @@ model Person {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  employee    Employee?
-  student     Student?
-  user        User?
+  employee Employee?
+  student  Student?
+  user     User?
 
   @@index([fullName])
   @@index([phone])
@@ -283,18 +282,18 @@ model Person {
 // ============================================================
 
 model Employee {
-  id                  String           @id @default(uuid()) @db.Uuid
-  personId            String           @unique @db.Uuid
-  employeeCode        String           @unique
-  employmentStatus    EmploymentStatus @default(ACTIVE)
-  employmentDate      DateTime?        @db.Date
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
+  id               String           @id @default(uuid()) @db.Uuid
+  personId         String           @unique @db.Uuid
+  employeeCode     String           @unique
+  employmentStatus EmploymentStatus @default(ACTIVE)
+  employmentDate   DateTime?        @db.Date
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
-  person              Person            @relation(fields: [personId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  teacher             Teacher?
-  staff               Staff?
+  teacher Teacher?
+  staff   Staff?
 
   employmentHistory   EmploymentHistory[]
   attendance          Attendance[]
@@ -302,9 +301,9 @@ model Employee {
   appraisals          Appraisal[]
   disciplinaryActions DisciplinaryAction[]
 
-  principalOfSchools  School[]          @relation("SchoolPrincipal")
-  supervisionVisits   SupervisionVisit[]
-  followUpsAssigned   FollowUp[]        @relation("FollowUpAssignedTo")
+  principalOfSchools School[]           @relation("SchoolPrincipal")
+  supervisionVisits  SupervisionVisit[]
+  followUpsAssigned  FollowUp[]         @relation("FollowUpAssignedTo")
 
   @@index([employmentStatus])
 }
@@ -314,16 +313,16 @@ model Employee {
 // ============================================================
 
 model Teacher {
-  id               String             @id @default(uuid()) @db.Uuid
-  employeeId       String             @unique @db.Uuid
-  qualification    String?
-  specialization   String?
-  employmentType   EmploymentType?
-  position         String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
+  id             String          @id @default(uuid()) @db.Uuid
+  employeeId     String          @unique @db.Uuid
+  qualification  String?
+  specialization String?
+  employmentType EmploymentType?
+  position       String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
-  employee         Employee           @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   assignments      TeacherAssignment[]
   transferRequests TransferRequest[]
@@ -337,15 +336,15 @@ model Teacher {
 // ============================================================
 
 model Staff {
-  id             String         @id @default(uuid()) @db.Uuid
-  employeeId     String         @unique @db.Uuid
+  id             String          @id @default(uuid()) @db.Uuid
+  employeeId     String          @unique @db.Uuid
   position       String?
   department     String?
   employmentType EmploymentType?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
-  employee       Employee       @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([department])
   @@index([position])
@@ -356,11 +355,11 @@ model Staff {
 // ============================================================
 
 model Student {
-  id          String              @id @default(uuid()) @db.Uuid
-  personId    String              @unique @db.Uuid
-  studentCode String              @unique
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  id          String   @id @default(uuid()) @db.Uuid
+  personId    String   @unique @db.Uuid
+  studentCode String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   person      Person              @relation(fields: [personId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   enrollments StudentEnrollment[]
@@ -373,21 +372,21 @@ model Student {
 // ============================================================
 
 model EmploymentHistory {
-  id             String             @id @default(uuid()) @db.Uuid
-  employeeId     String             @db.Uuid
-  academicYearId String?            @db.Uuid
+  id             String           @id @default(uuid()) @db.Uuid
+  employeeId     String           @db.Uuid
+  academicYearId String?          @db.Uuid
   employmentType EmploymentType?
   position       String?
   department     String?
-  salary         Decimal?           @db.Decimal(12, 2)
+  salary         Decimal?         @db.Decimal(12, 2)
   status         EmploymentStatus
-  startDate      DateTime           @db.Date
-  endDate        DateTime?          @db.Date
+  startDate      DateTime         @db.Date
+  endDate        DateTime?        @db.Date
   reason         String?
-  createdAt      DateTime           @default(now())
+  createdAt      DateTime         @default(now())
 
-  employee       Employee           @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear?      @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  employee     Employee      @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([employeeId])
   @@index([employeeId, startDate])
@@ -411,9 +410,9 @@ model TeacherAssignment {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  teacher        Teacher          @relation(fields: [teacherId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  school         School           @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear     @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  school       School       @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([teacherId])
   @@index([teacherId, academicYearId])
@@ -439,9 +438,9 @@ model StudentEnrollment {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  student        Student          @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  school         School           @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear     @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  school       School       @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@unique([studentId, academicYearId])
   @@index([schoolId, academicYearId, status])
@@ -465,8 +464,8 @@ model Attendance {
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 
-  employee       Employee         @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear     @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@unique([employeeId, date])
   @@index([academicYearId, date])
@@ -490,9 +489,9 @@ model LeaveRequest {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
-  employee       Employee    @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  reviewedBy     User?       @relation("LeaveReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  reviewedBy   User?        @relation("LeaveReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([employeeId])
   @@index([employeeId, academicYearId])
@@ -505,19 +504,19 @@ model LeaveRequest {
 // ============================================================
 
 model Appraisal {
-  id             String      @id @default(uuid()) @db.Uuid
-  employeeId     String      @db.Uuid
-  academicYearId String      @db.Uuid
-  score          Decimal?    @db.Decimal(5, 2)
+  id             String   @id @default(uuid()) @db.Uuid
+  employeeId     String   @db.Uuid
+  academicYearId String   @db.Uuid
+  score          Decimal? @db.Decimal(5, 2)
   comments       String?
-  appraisedById  String?     @db.Uuid
-  appraisalDate  DateTime    @db.Date
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  appraisedById  String?  @db.Uuid
+  appraisalDate  DateTime @db.Date
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  employee       Employee    @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  appraisedBy    User?       @relation("AppraisalsByUser", fields: [appraisedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  employee     Employee     @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  appraisedBy  User?        @relation("AppraisalsByUser", fields: [appraisedById], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([employeeId, academicYearId])
   @@index([academicYearId])
@@ -528,17 +527,17 @@ model Appraisal {
 // ============================================================
 
 model DisciplinaryAction {
-  id             String       @id @default(uuid()) @db.Uuid
-  employeeId     String       @db.Uuid
-  academicYearId String?      @db.Uuid
+  id             String   @id @default(uuid()) @db.Uuid
+  employeeId     String   @db.Uuid
+  academicYearId String?  @db.Uuid
   actionType     String
-  date           DateTime     @db.Date
+  date           DateTime @db.Date
   description    String?
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  employee     Employee      @relation(fields: [employeeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear? @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([employeeId])
   @@index([academicYearId])
@@ -563,12 +562,12 @@ model TransferRequest {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
-  teacher        Teacher        @relation(fields: [teacherId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  fromSchool     School         @relation("TransferFromSchool", fields: [fromSchoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  toSchool       School         @relation("TransferToSchool", fields: [toSchoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  teacher      Teacher      @relation(fields: [teacherId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  fromSchool   School       @relation("TransferFromSchool", fields: [fromSchoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  toSchool     School       @relation("TransferToSchool", fields: [toSchoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  history        TransferHistory[]
+  history TransferHistory[]
 
   @@index([teacherId, status])
   @@index([status, createdAt])
@@ -590,8 +589,8 @@ model TransferHistory {
   comment           String?
   createdAt         DateTime       @default(now())
 
-  transferRequest   TransferRequest @relation(fields: [transferRequestId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  actor             User?           @relation("TransferHistoryActor", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  transferRequest TransferRequest @relation(fields: [transferRequestId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  actor           User?           @relation("TransferHistoryActor", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([transferRequestId, createdAt])
   @@index([actorId, createdAt])
@@ -602,22 +601,22 @@ model TransferHistory {
 // ============================================================
 
 model SupervisionVisit {
-  id             String           @id @default(uuid()) @db.Uuid
-  schoolId       String           @db.Uuid
-  supervisorId   String           @db.Uuid
-  academicYearId String           @db.Uuid
-  visitDate      DateTime         @db.Date
-  overallScore   Decimal?         @db.Decimal(5, 2)
+  id             String            @id @default(uuid()) @db.Uuid
+  schoolId       String            @db.Uuid
+  supervisorId   String            @db.Uuid
+  academicYearId String            @db.Uuid
+  visitDate      DateTime          @db.Date
+  overallScore   Decimal?          @db.Decimal(5, 2)
   status         SupervisionStatus @default(PLANNED)
   notes          String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
 
-  school         School           @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  supervisor     Employee         @relation(fields: [supervisorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  academicYear   AcademicYear     @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  school       School       @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  supervisor   Employee     @relation(fields: [supervisorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  inspections    Inspection[]
+  inspections Inspection[]
 
   @@index([schoolId, visitDate])
   @@index([supervisorId, visitDate])
@@ -629,16 +628,16 @@ model SupervisionVisit {
 // ============================================================
 
 model Inspection {
-  id                 String           @id @default(uuid()) @db.Uuid
-  supervisionVisitId String           @db.Uuid
+  id                 String   @id @default(uuid()) @db.Uuid
+  supervisionVisitId String   @db.Uuid
   category           String
-  score              Decimal?         @db.Decimal(5, 2)
+  score              Decimal? @db.Decimal(5, 2)
   notes              String?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  supervisionVisit   SupervisionVisit @relation(fields: [supervisionVisitId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  findings           Finding[]
+  supervisionVisit SupervisionVisit @relation(fields: [supervisionVisitId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  findings         Finding[]
 
   @@index([supervisionVisitId])
   @@index([category])
@@ -658,8 +657,8 @@ model Finding {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
-  inspection     Inspection      @relation(fields: [inspectionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  followUps      FollowUp[]
+  inspection Inspection @relation(fields: [inspectionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  followUps  FollowUp[]
 
   @@index([inspectionId])
   @@index([severity, status])
@@ -680,8 +679,8 @@ model FollowUp {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  finding       Finding        @relation(fields: [findingId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  assignedTo    Employee?      @relation("FollowUpAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  finding    Finding   @relation(fields: [findingId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  assignedTo Employee? @relation("FollowUpAssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([findingId])
   @@index([assignedToId, status])
@@ -693,32 +692,32 @@ model FollowUp {
 // ============================================================
 
 model User {
-  id                String             @id @default(uuid()) @db.Uuid
-  personId          String?            @unique @db.Uuid
-  email             String             @unique
-  passwordHash      String?
-  status            UserStatus         @default(ACTIVE)
-  failedLoginCount  Int                @default(0)
-  lockedUntil       DateTime?
-  lastLoginAt       DateTime?
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
+  id               String     @id @default(uuid()) @db.Uuid
+  personId         String?    @unique @db.Uuid
+  email            String     @unique
+  passwordHash     String?
+  status           UserStatus @default(ACTIVE)
+  failedLoginCount Int        @default(0)
+  lockedUntil      DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
-  person            Person?            @relation(fields: [personId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  person Person? @relation(fields: [personId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
-  roles             UserRole[]
-  scopes            UserScope[]
+  roles  UserRole[]
+  scopes UserScope[]
 
-  auditLogs         AuditLog[]         @relation("AuditActor")
-  transferHistory   TransferHistory[]  @relation("TransferHistoryActor")
-  reviewedLeaves    LeaveRequest[]     @relation("LeaveReviewedBy")
-  appraisalsByUser  Appraisal[]        @relation("AppraisalsByUser")
+  auditLogs        AuditLog[]        @relation("AuditActor")
+  transferHistory  TransferHistory[] @relation("TransferHistoryActor")
+  reviewedLeaves   LeaveRequest[]    @relation("LeaveReviewedBy")
+  appraisalsByUser Appraisal[]       @relation("AppraisalsByUser")
 
-  sessions          Session[]
-  notifications     Notification[]
-  sentMessages      Message[]          @relation("MessageSender")
-  receivedMessages  Message[]          @relation("MessageRecipient")
-  announcements     Announcement[]     @relation("AnnouncementCreator")
+  sessions         Session[]
+  notifications    Notification[]
+  sentMessages     Message[]      @relation("MessageSender")
+  receivedMessages Message[]      @relation("MessageRecipient")
+  announcements    Announcement[] @relation("AnnouncementCreator")
 
   @@index([status])
 }
@@ -728,11 +727,11 @@ model User {
 // ============================================================
 
 model Role {
-  id          String           @id @default(uuid()) @db.Uuid
-  name        String           @unique
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
   description String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   users       UserRole[]
   permissions RolePermission[]
@@ -743,12 +742,12 @@ model Role {
 // ============================================================
 
 model Permission {
-  id          String           @id @default(uuid()) @db.Uuid
-  key         String           @unique
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
   description String?
-  createdAt   DateTime         @default(now())
+  createdAt   DateTime @default(now())
 
-  roles       RolePermission[]
+  roles RolePermission[]
 }
 
 // ============================================================
@@ -760,8 +759,8 @@ model UserRole {
   roleId     String   @db.Uuid
   assignedAt DateTime @default(now())
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([userId, roleId])
   @@index([roleId])
@@ -772,12 +771,12 @@ model UserRole {
 // ============================================================
 
 model RolePermission {
-  roleId       String     @db.Uuid
-  permissionId String     @db.Uuid
-  assignedAt   DateTime   @default(now())
+  roleId       String   @db.Uuid
+  permissionId String   @db.Uuid
+  assignedAt   DateTime @default(now())
 
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([roleId, permissionId])
   @@index([permissionId])
@@ -788,20 +787,20 @@ model RolePermission {
 // ============================================================
 
 model Scope {
-  id         String    @id @default(uuid()) @db.Uuid
-  type       ScopeType
+  id   String    @id @default(uuid()) @db.Uuid
+  type ScopeType
 
-  cityId     String?   @db.Uuid
-  districtId String?   @db.Uuid
-  schoolId   String?   @db.Uuid
+  cityId     String? @db.Uuid
+  districtId String? @db.Uuid
+  schoolId   String? @db.Uuid
 
-  createdAt  DateTime  @default(now())
+  createdAt DateTime @default(now())
 
-  city       City?     @relation(fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  district   District? @relation(fields: [districtId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  school     School?   @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  city     City?     @relation(fields: [cityId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  district District? @relation(fields: [districtId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  school   School?   @relation(fields: [schoolId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  users      UserScope[]
+  users UserScope[]
 
   @@index([type])
   @@index([cityId])
@@ -818,8 +817,8 @@ model UserScope {
   scopeId    String   @db.Uuid
   assignedAt DateTime @default(now())
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  scope      Scope    @relation(fields: [scopeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  scope Scope @relation(fields: [scopeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([userId, scopeId])
   @@index([scopeId])
@@ -838,7 +837,7 @@ model Session {
   createdAt  DateTime  @default(now())
   lastUsedAt DateTime?
 
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
@@ -861,7 +860,7 @@ model AuditLog {
   requestId String?
   createdAt DateTime    @default(now())
 
-  actor     User?       @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([actorId, createdAt])
   @@index([entity, entityId, createdAt])
@@ -874,14 +873,14 @@ model AuditLog {
 // ============================================================
 
 model Notification {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @db.Uuid
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
   title     String
   message   String
   readAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId, readAt])
   @@index([userId, createdAt])
@@ -902,8 +901,8 @@ model Announcement {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  city        City?     @relation(fields: [cityId], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  createdBy   User?     @relation("AnnouncementCreator", fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  city      City? @relation(fields: [cityId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdBy User? @relation("AnnouncementCreator", fields: [createdById], references: [id], onDelete: SetNull, onUpdate: Cascade)
 
   @@index([cityId])
   @@index([publishedAt])
@@ -914,18 +913,17 @@ model Announcement {
 // ============================================================
 
 model Message {
-  id          String   @id @default(uuid()) @db.Uuid
-  senderId    String   @db.Uuid
-  recipientId String   @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
+  senderId    String    @db.Uuid
+  recipientId String    @db.Uuid
   subject     String?
   content     String
   readAt      DateTime?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
-  sender      User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  recipient   User     @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  sender    User @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  recipient User @relation("MessageRecipient", fields: [recipientId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([senderId, createdAt])
   @@index([recipientId, readAt])
 }
-```
