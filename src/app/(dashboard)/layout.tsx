@@ -2,9 +2,7 @@ import type { ReactNode } from "react";
 
 import { redirect } from "next/navigation";
 
-import { Sidebar } from "@/components/layout/sidebar";
-
-import { Topbar } from "@/components/layout/topbar";
+import { AppShell } from "@/components/layout/app-shell";
 
 import { requireUser } from "@/lib/auth/authorization";
 
@@ -15,20 +13,10 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
+  let user;
+
   try {
-    const user = await requireUser();
-
-    return (
-      <div className="min-h-screen">
-        <Sidebar user={user} />
-
-        <div className="lg:pl-64">
-          <Topbar user={user} />
-
-          <main className="p-4 sm:p-6 lg:p-8">{children}</main>
-        </div>
-      </div>
-    );
+    user = await requireUser();
   } catch (error) {
     if (error instanceof AuthError && error.status === 401) {
       redirect("/login");
@@ -36,4 +24,6 @@ export default async function DashboardLayout({
 
     throw error;
   }
+
+  return <AppShell user={user}>{children}</AppShell>;
 }

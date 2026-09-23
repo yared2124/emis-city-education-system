@@ -1,11 +1,15 @@
-import type { Prisma } from "@/generated/prisma/client";
+import type {
+  AuditAction,
+  AuditResult,
+  Prisma,
+} from "@/generated/prisma/client";
 
 type WriteAuditInput = {
   actorId?: string;
-  action: Prisma.AuditAction;
+  action: AuditAction;
   entity: string;
   entityId: string;
-  result: Prisma.AuditResult;
+  result: AuditResult;
   before?: unknown;
   after?: unknown;
   requestId?: string;

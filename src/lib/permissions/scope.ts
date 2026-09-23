@@ -1,15 +1,20 @@
+import type { Prisma } from "@/generated/prisma/client";
+
 import type { AuthenticatedUser } from "@/lib/auth/authorization";
 
 export function isSuperAdmin(user: AuthenticatedUser) {
   return user.roles.some(({ role }) => role.name === "SUPER_ADMIN");
 }
 
-export function schoolScopeFilter(user: AuthenticatedUser) {
+export function schoolScopeFilter(
+  user: AuthenticatedUser,
+): Prisma.SchoolWhereInput | undefined {
   if (isSuperAdmin(user)) {
     return undefined;
   }
 
-  const clauses = user.scopes.flatMap(({ scope }) => {
+  const clauses: Prisma.SchoolWhereInput[] = user.scopes.flatMap(
+    ({ scope }): Prisma.SchoolWhereInput[] => {
     if (scope.type === "SCHOOL" && scope.schoolId) {
       return [
         {
@@ -37,7 +42,8 @@ export function schoolScopeFilter(user: AuthenticatedUser) {
     }
 
     return [];
-  });
+    }
+  );
 
   if (clauses.length === 0) {
     return {
@@ -52,30 +58,34 @@ export function schoolScopeFilter(user: AuthenticatedUser) {
   };
 }
 
-export function districtScopeFilter(user: AuthenticatedUser) {
+export function districtScopeFilter(
+  user: AuthenticatedUser,
+): Prisma.DistrictWhereInput | undefined {
   if (isSuperAdmin(user)) {
     return undefined;
   }
 
-  const clauses = user.scopes.flatMap(({ scope }) => {
-    if (scope.type === "DISTRICT" && scope.districtId) {
-      return [
-        {
-          id: scope.districtId,
-        },
-      ];
-    }
+  const clauses: Prisma.DistrictWhereInput[] = user.scopes.flatMap(
+    ({ scope }): Prisma.DistrictWhereInput[] => {
+      if (scope.type === "DISTRICT" && scope.districtId) {
+        return [
+          {
+            id: scope.districtId,
+          },
+        ];
+      }
 
-    if (scope.type === "CITY" && scope.cityId) {
-      return [
-        {
-          cityId: scope.cityId,
-        },
-      ];
-    }
+      if (scope.type === "CITY" && scope.cityId) {
+        return [
+          {
+            cityId: scope.cityId,
+          },
+        ];
+      }
 
-    return [];
-  });
+      return [];
+    },
+  );
 
   if (clauses.length === 0) {
     return {

@@ -18,12 +18,15 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "dotenv": "^16.4.7",
     "next": "^16.3.3",
     "pg": "^8.16.3",
+    "postcss": "^8.5.28",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "zod": "^3.24.2"
+    "tailwindcss": "^4.3.3",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

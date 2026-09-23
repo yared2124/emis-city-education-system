@@ -1,8 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { loginAction } from "@/features/auth/actions/auth-actions";
+
+import { AlertIcon } from "@/components/icons";
+
+import {
+  Button,
+  ErrorBanner,
+  Field,
+  inputClasses,
+} from "@/components/ui";
 
 const initialState = {
   ok: false,
@@ -12,59 +21,61 @@ const initialState = {
 export function LoginForm() {
   const [state, action, pending] = useActionState(loginAction, initialState);
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <form action={action} className="space-y-5">
-      <div>
-        <label htmlFor="email" className="text-sm font-medium text-slate-700">
-          Email
-        </label>
-
+      <Field label="Email" htmlFor="email">
         <input
           id="email"
           name="email"
           type="email"
           autoComplete="username"
+          placeholder="name@example.gov"
           required
-          className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          className={inputClasses}
         />
-      </div>
+      </Field>
 
-      <div>
-        <label
-          htmlFor="password"
-          className="text-sm font-medium text-slate-700"
-        >
-          Password
-        </label>
+      <Field label="Password" htmlFor="password">
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            placeholder="••••••••"
+            required
+            minLength={8}
+            maxLength={128}
+            className={`${inputClasses} pr-16`}
+          />
 
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          minLength={8}
-          maxLength={128}
-          className="mt-2 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        />
-      </div>
-
-      {state.error ? (
-        <div
-          role="alert"
-          className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700"
-        >
-          {state.error}
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            className="absolute inset-y-0 right-3 my-auto h-fit rounded text-xs font-semibold text-brand-600 hover:text-brand-700"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
         </div>
-      ) : null}
+      </Field>
 
-      <button
+      {state.error ? <ErrorBanner>{state.error}</ErrorBanner> : null}
+
+      <Button
         type="submit"
         disabled={pending}
-        className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full"
       >
-        {pending ? "Signing in..." : "Sign in"}
-      </button>
+        {pending ? "Signing in…" : "Sign in"}
+      </Button>
+
+      <p className="flex items-center gap-1.5 text-xs text-slate-500">
+        <AlertIcon className="h-3.5 w-3.5 text-slate-400" />
+
+        Accounts lock for 15 minutes after 5 failed attempts.
+      </p>
     </form>
   );
 }

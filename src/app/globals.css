@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  /*
+   * EMIS City Education System — design tokens
+   * Indigo primary with teal accent; slate neutrals.
+   */
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --color-brand-50: oklch(0.97 0.014 274);
+  --color-brand-100: oklch(0.94 0.028 274);
+  --color-brand-200: oklch(0.89 0.05 274);
+  --color-brand-300: oklch(0.82 0.08 274);
+  --color-brand-400: oklch(0.72 0.13 274);
+  --color-brand-500: oklch(0.62 0.19 274);
+  --color-brand-600: oklch(0.54 0.22 274);
+  --color-brand-700: oklch(0.46 0.2 274);
+  --color-brand-800: oklch(0.39 0.16 274);
+  --color-brand-900: oklch(0.33 0.12 274);
+  --color-brand-950: oklch(0.24 0.09 274);
+
+  --shadow-card: 0 1px 2px 0 rgb(15 23 42 / 0.04),
+    0 1px 3px 0 rgb(15 23 42 / 0.06);
+  --shadow-pop: 0 10px 30px -8px rgb(15 23 42 / 0.18),
+    0 4px 10px -4px rgb(15 23 42 / 0.08);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-slate-100 text-slate-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand-600/20;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(148 163 184 / 0.5) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background-color: rgb(148 163 184 / 0.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
