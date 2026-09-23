@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 
 import { redirect } from "next/navigation";
 
-import { AuthError } from "@/lib/auth/errors";
-
-import { requireUser } from "@/lib/auth/authorization";
+import { guardPage } from "@/lib/auth/guard";
 
 import { hasPermission } from "@/lib/permissions/client";
 
@@ -35,17 +33,13 @@ export default async function SchoolsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  let user;
+  const guard = await guardPage("schools.read");
 
-  try {
-    user = await requireUser();
-  } catch (error) {
-    if (error instanceof AuthError && error.status === 401) {
-      redirect("/login");
-    }
-
-    throw error;
+  if (!guard.ok) {
+    redirect(guard.redirectTo);
   }
+
+  const user = guard.user;
 
   const params = await searchParams;
 

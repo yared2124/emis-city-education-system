@@ -35,7 +35,15 @@ export async function requireUser() {
 
       scopes: {
         include: {
-          scope: true,
+          scope: {
+            include: {
+              city: true,
+
+              district: true,
+
+              school: true,
+            },
+          },
         },
       },
     },

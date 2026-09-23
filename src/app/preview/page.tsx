@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+
 import { AppShell } from "@/components/layout/app-shell";
 
 import { StatCard } from "@/features/dashboard/components/stat-card";
@@ -29,8 +31,10 @@ import {
   titleCase,
 } from "@/lib/format";
 
-// Design demo route: renders the full UI with mock data so the design can be
-// reviewed without a database connection. Every real route is auth-guarded.
+/**
+ * Design demo with sample data. Disabled unless ENABLE_UI_PREVIEW=true
+ * is set in the environment — never enable in production.
+ */
 
 export const metadata = {
   title: "UI preview",
@@ -165,11 +169,20 @@ const mockSchools = [
 ];
 
 export default function PreviewPage() {
+  if (process.env.ENABLE_UI_PREVIEW !== "true") {
+    notFound();
+  }
+
   return (
-    <AppShell user={mockUser}>
+    <AppShell
+      user={mockUser}
+      notifications={[]}
+      unreadCount={0}
+    >
       <div className="space-y-6">
         <div className="flex items-center gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-inset ring-amber-200">
           <Badge tone="warning">Demo</Badge>
+
           <span>
             Static preview with sample data. Sign in for live data from your
             database.

@@ -24,9 +24,7 @@ import {
   listDistrictOptions,
 } from "@/features/schools/services/school-service";
 
-import { requireUser } from "@/lib/auth/authorization";
-
-import { AuthError } from "@/lib/auth/errors";
+import { guardPage } from "@/lib/auth/guard";
 
 import { hasPermission } from "@/lib/permissions/client";
 
@@ -41,17 +39,13 @@ export default async function SchoolDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  let user;
+  const guard = await guardPage("schools.read");
 
-  try {
-    user = await requireUser();
-  } catch (error) {
-    if (error instanceof AuthError && error.status === 401) {
-      redirect("/login");
-    }
-
-    throw error;
+  if (!guard.ok) {
+    redirect(guard.redirectTo);
   }
+
+  const user = guard.user;
 
   const { id } = await params;
 

@@ -6,7 +6,9 @@ import type { AuthenticatedUser } from "@/lib/auth/authorization";
 
 import { requirePermission } from "@/lib/auth/authorization";
 
-import { schoolScopeFilter } from "@/lib/permissions/scope";
+import { isSuperAdmin,
+  schoolScopeFilter,
+} from "@/lib/permissions/scope";
 
 export type DashboardData = {
   stats: {
@@ -123,20 +125,49 @@ export async function getDashboardData(): Promise<DashboardData> {
         take: 4,
       }),
 
-      db.auditLog.findMany({
-        orderBy: {
-          createdAt: "desc",
-        },
-        take: 6,
+      // Audit feed scoped to the user's reach: own actions plus changes to
+      // schools inside their scope (never other districts' activity).
+      db.school
+        .findMany({
+          where: schoolScopeFilter(user),
 
-        include: {
-          actor: {
-            include: {
-              person: true,
-            },
+          select: {
+            id: true,
           },
-        },
-      }),
+        })
+        .then((scopedSchools) =>
+          db.auditLog.findMany({
+            where: isSuperAdmin(user)
+              ? undefined
+              : {
+                  OR: [
+                    {
+                      actorId: user.id,
+                    },
+
+                    {
+                      entity: "School",
+
+                      entityId: {
+                        in: scopedSchools.map((school) => school.id),
+                      },
+                    },
+                  ],
+                },
+            orderBy: {
+              createdAt: "desc",
+            },
+            take: 6,
+
+            include: {
+              actor: {
+                include: {
+                  person: true,
+                },
+              },
+            },
+          }),
+        ),
     ]);
 
   return {

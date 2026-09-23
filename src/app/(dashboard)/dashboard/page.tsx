@@ -21,9 +21,7 @@ import { StatCard } from "@/features/dashboard/components/stat-card";
 
 import { getDashboardData } from "@/features/dashboard/queries/dashboard-queries";
 
-import { requireUser } from "@/lib/auth/authorization";
-
-import { AuthError } from "@/lib/auth/errors";
+import { guardPage } from "@/lib/auth/guard";
 
 import {
   displayName,
@@ -47,17 +45,13 @@ const AUDIT_TONES: Record<string, "success" | "danger" | "neutral"> = {
 };
 
 export default async function DashboardPage() {
-  let user;
+  const guard = await guardPage("dashboard.read");
 
-  try {
-    user = await requireUser();
-  } catch (error) {
-    if (error instanceof AuthError && error.status === 401) {
-      redirect("/login");
-    }
-
-    throw error;
+  if (!guard.ok) {
+    redirect(guard.redirectTo);
   }
+
+  const user = guard.user;
 
   const data = await getDashboardData();
 

@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 
 import { useEffect, useRef, useState } from "react";
 
-import { BellIcon } from "@/components/icons";
+import { NotificationsMenu } from "@/features/notifications/components/notifications-menu";
+
+import type { NotificationItem } from "@/features/notifications/components/notifications-menu";
 
 import { MobileMenuButton } from "@/components/layout/sidebar";
 
@@ -147,9 +149,13 @@ function UserMenu({ user }: { user: AuthenticatedUser }) {
 export function Topbar({
   user,
   onOpenMobileMenu,
+  notifications,
+  unreadCount,
 }: {
   user: AuthenticatedUser;
   onOpenMobileMenu: () => void;
+  notifications: NotificationItem[];
+  unreadCount: number;
 }) {
   const pathname = usePathname();
 
@@ -165,13 +171,7 @@ export function Topbar({
         </p>
       </div>
 
-      <button
-        type="button"
-        aria-label="Notifications"
-        className="relative rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
-      >
-        <BellIcon className="h-5 w-5" />
-      </button>
+      <NotificationsMenu items={notifications} unreadCount={unreadCount} />
 
       <UserMenu user={user} />
     </header>

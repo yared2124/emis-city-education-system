@@ -12,23 +12,17 @@ import { SchoolForm } from "@/features/schools/components/school-form";
 
 import { listDistrictOptions } from "@/features/schools/services/school-service";
 
-import { requirePermission } from "@/lib/auth/authorization";
-
-import { AuthError } from "@/lib/auth/errors";
+import { guardPage } from "@/lib/auth/guard";
 
 export const metadata: Metadata = {
   title: "Add school",
 };
 
 export default async function NewSchoolPage() {
-  try {
-    await requirePermission("schools.create");
-  } catch (error) {
-    if (error instanceof AuthError && error.status === 401) {
-      redirect("/login");
-    }
+  const guard = await guardPage("schools.create");
 
-    throw error;
+  if (!guard.ok) {
+    redirect(guard.redirectTo);
   }
 
   const districts = await listDistrictOptions("schools.create");

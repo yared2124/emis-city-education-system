@@ -10,11 +10,17 @@ import { Topbar } from "@/components/layout/topbar";
 
 import type { AuthenticatedUser } from "@/lib/auth/authorization";
 
+import type { NotificationItem } from "@/features/notifications/components/notifications-menu";
+
 export function AppShell({
   user,
+  notifications,
+  unreadCount,
   children,
 }: {
   user: AuthenticatedUser;
+  notifications: NotificationItem[];
+  unreadCount: number;
   children: ReactNode;
 }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -31,6 +37,8 @@ export function AppShell({
         <Topbar
           user={user}
           onOpenMobileMenu={() => setMobileNavOpen(true)}
+          notifications={notifications}
+          unreadCount={unreadCount}
         />
 
         <main className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">

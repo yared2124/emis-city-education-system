@@ -292,8 +292,21 @@ const DEMO_USERS: DemoUser[] = [
   },
 ];
 
+/*
+ * Demo password is configurable via SEED_DEMO_PASSWORD. The default is
+ * for local development only — always set an explicit value (or skip
+ * demo users entirely) in shared or production environments.
+ */
+const DEMO_PASSWORD = process.env.SEED_DEMO_PASSWORD ?? "Password123!";
+
 async function upsertDemoUsers(roleIds: Map<string, string>, org: Awaited<ReturnType<typeof upsertOrgStructure>>) {
-  const defaultPassword = await hashPassword("Password123!");
+  if (!process.env.SEED_DEMO_PASSWORD) {
+    console.warn(
+      "WARNING: seeding demo users with the default development password. Set SEED_DEMO_PASSWORD for any shared environment.",
+    );
+  }
+
+  const defaultPassword = await hashPassword(DEMO_PASSWORD);
 
   for (const demo of DEMO_USERS) {
     const existingPerson = await db.person.findFirst({
@@ -427,7 +440,7 @@ async function main() {
 
   console.log(`Seeded ${org.schools.length} schools, academic year ${academicYear.name}.`);
 
-  console.log("Demo users (password: Password123!):");
+  console.log(`Demo users (password: ${DEMO_PASSWORD}):`);
 
   for (const demo of DEMO_USERS) {
     console.log(`  ${demo.email} — ${demo.role}`);

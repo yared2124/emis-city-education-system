@@ -17,8 +17,20 @@ Built with **Next.js 16 (App Router)**, **React 19**, **TypeScript**, **Prisma 7
 - **Dashboard** — scope-filtered stats (active schools, teacher assignments, enrolled students, pending transfers), city announcements, recent audit activity.
 - **Schools module (full CRUD)** — searchable, filterable, paginated list; detail page; create/edit with server-side Zod validation; soft archive with confirmation. All writes are audited with before/after snapshots.
 - **Design system** — Tailwind v4 theme (indigo brand palette, card shadows), shared UI primitives (buttons, fields, cards, badges, empty/error states), custom icon set, responsive app shell with permission-aware sidebar, mobile drawer and user menu.
-- **Global states** — 404, error boundary, dashboard loading skeletons.
+- **Global states** — 404, error boundary, dashboard loading skeletons, friendly no-access page.
 - **Audit logging** — every create/update/archive records actor, action, entity, before/after JSON and request id, written transactionally.
+- **Notifications** — per-user notifications with unread badge, dropdown feed and mark-as-read.
+- **Account settings** — profile, roles and scopes overview; self-service change password (revokes all sessions on rotation).
+
+### Production hardening
+
+- **Security headers** — CSP, HSTS, `X-Frame-Options: DENY`, `nosniff`, referrer and permissions policies (see `next.config.ts`).
+- **Login rate limiting** — sliding-window limits per IP and per account (in-memory; swap for Redis when scaling horizontally).
+- **Health check** — `GET /api/health` verifies database connectivity for load balancers/orchestrators.
+- **Scoped audit feed** — dashboard activity only shows changes within the viewer's scope.
+- **Env-gated demo route** — `/preview` renders only when `ENABLE_UI_PREVIEW=true`.
+- **Unit tests** — Vitest suite covering password hashing, permission checks, scope filters and rate limiting (`npm test`).
+- **CI** — GitHub Actions runs typecheck, lint, tests and build on every push/PR to `main`.
 
 ### Roadmap (UI pending — data models and permissions already exist)
 
@@ -59,6 +71,10 @@ Create a `.env` file (see `.env.example`):
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public"
+
+# Optional
+SEED_DEMO_PASSWORD="change-me-before-any-shared-environment"
+ENABLE_UI_PREVIEW="false"   # set "true" to expose the /preview design demo
 ```
 
 ### 3. Migrate and seed
@@ -76,7 +92,7 @@ npm run dev              # http://localhost:3000
 
 ### Demo accounts
 
-Created by the seed (password for all: `Password123!`):
+Created by the seed. The password defaults to `Password123!` for local development — **set `SEED_DEMO_PASSWORD` before seeding any shared environment** (the seed warns if you forget):
 
 | Email                       | Role              | Scope                    |
 | --------------------------- | ----------------- | ------------------------ |
@@ -98,6 +114,8 @@ Sign in with different accounts to see the sidebar and data scope change per rol
 | `npm run start`         | Start production server              |
 | `npm run lint`          | ESLint                               |
 | `npm run typecheck`     | `tsc --noEmit`                       |
+| `npm run test`          | Vitest unit tests                    |
+| `npm run test:watch`    | Vitest in watch mode                 |
 | `npm run prisma:generate` | Generate Prisma Client             |
 | `npm run prisma:migrate`  | Create/apply dev migration         |
 | `npm run prisma:deploy`   | Apply migrations (CI/prod)         |
@@ -157,8 +175,10 @@ Client form → Server Action → Zod parse → requirePermission(key)
 ### Security notes
 
 - Session tokens are random 256-bit values; only their SHA-256 hashes are stored. Cookies are `httpOnly`, `SameSite=Lax`, `Secure` in production.
-- Login responses never reveal whether an email exists; failed attempts increment a counter that locks the account.
+- Login responses never reveal whether an email exists; failed attempts increment a counter that locks the account, and login is additionally rate-limited per IP and per account.
+- Password changes revoke every existing session for that user.
 - Audit entries are written in the same transaction as the change they describe.
+- Strict CSP and hardening headers are applied to all responses; the generated Prisma Client is not committed — run `npm run prisma:generate` after install.
 
 ---
 
